@@ -3,7 +3,9 @@ package com.iseeyou.kang.netframework;
 import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.iseeyou.kang.netframework.bean.GuideBean;
 import com.iseeyou.kang.netframework.net.RetrofitHelper;
@@ -13,6 +15,7 @@ import com.iseeyou.kang.netframework.util.GlideUtil;
 import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import rx.Subscription;
 
 /**
@@ -23,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.iv1)  ImageView iv1;
     @BindView(R.id.iv2)  ImageView iv2;
     @BindView(R.id.iv3)  ImageView iv3;
+    @BindView(R.id.tv)  TextView tv;
 
     private ProgressDialog mDialog = null;
     private Subscription mSubscription = null;// 用于回收资源防止内存泄漏就是回收订阅
@@ -65,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
                     GlideUtil.load(MainActivity.this,url2,iv2);
                 if(url3!=null)
                     GlideUtil.load(MainActivity.this,url3,iv3);
+                tv.setText("Bean:\n" + resBeen.toString());
             }
 
             @Override
@@ -81,10 +86,36 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * 统一管理点击事件
+     * @param view
+     */
+    @OnClick({R.id.iv1,R.id.iv2,R.id.iv3})
+    public void onClick(View view)
+    {
+        switch (view.getId())
+        {
+            case R.id.iv1:
+                tip("Don't");
+                break;
+            case R.id.iv2:
+                tip("Touch");
+                break;
+            case R.id.iv3:
+                tip("Me Ok?");
+                break;
+        }
+    }
+
+    private void tip(String message){
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if(mSubscription!=null&&!mSubscription.isUnsubscribed())
             mSubscription.unsubscribe();//解除订阅防止内存泄漏
     }
+
 }
